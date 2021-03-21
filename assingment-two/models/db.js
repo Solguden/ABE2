@@ -2,7 +2,8 @@ var mongoose = require('mongoose');
 require('./user');
 require('./hotel');
 require('./room');
-const url = 'mongodb://localhost:27017/assignment-one'
+//const dbURI = process.env.MONGODB_URI; 
+const dbURI = 'mongodb://localhost:27017/assignment-two'
 
 const gracefulShutdown = (msg, callback) => {
     mongoose.connection.close( () => {
@@ -13,7 +14,7 @@ const gracefulShutdown = (msg, callback) => {
 };
 
 mongoose.connection.on('connected', () => {
-    // console.log(`Mongoose connected to ${dbURI}`);
+    console.log(`Mongoose connected to ${dbURI}`);
 });
 mongoose.connection.on('error', err => {
     console.log('Mongoose connection error:', err);
@@ -43,7 +44,7 @@ process.on('SIGTERM', () => {
 
 async function main() {
     try {
-        await mongoose.connect(url, {
+        await mongoose.connect(dbURI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useCreateIndex: true

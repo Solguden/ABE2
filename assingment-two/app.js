@@ -1,3 +1,4 @@
+import { schema } from './schema/index';
 require('dotenv').config();
 var createError = require('http-errors');
 var express = require('express');
@@ -7,6 +8,52 @@ var logger = require('morgan');
 
 var db = require('./models/db')
 var app = express();
+
+const { graphqlHTTP } = require('express-graphql');
+const { buildSchema } = require('graphql')
+
+
+const swaggerJSDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+const { type } = require('os');
+const jwt = require('express-jwt');
+const authorize = require('./helpers/authorize');
+
+const swaggerDefinition = {
+  openapi: '3.0.0',
+  info: {
+    title: 'Express API to manage hotelsystem',
+    version: '1.0.0',
+  },
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      }
+    }
+  },
+  security: {
+    bearerAuth: []
+  },
+  servers: [{
+    url: 'https://hotelreservationgruppe15.herokuapp.com/',
+    description: 'Development server',
+  }, ],
+}
+const options = {
+  swaggerDefinition,
+  // Paths to files containing OpenAPI definitions
+  apis: ['./controllers/*.js']
+
+}
+ 
+const swaggerSpec = swaggerJSDoc(options);
+
+const loaders = {
+ // rooms: new DataLoader(())
+}
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -23,7 +70,15 @@ app.use('/hotels',require('./controllers/hotel_controller'));
 app.use('/rooms',require('./controllers/room_controller'));
 // app.use('/rooms',roomsRouter);
 app.use('/users',require('./controllers/user_controller'))
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+app.use(
+  '/graphql',
+  graphqlHTTP({
+    schema,
+    graphiql: true,
+  })
+);
 
 //catch 404 and forward to error handler
 app.use(function(req, res, next) {

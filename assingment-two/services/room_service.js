@@ -16,7 +16,7 @@ async function getRoomById(roomId) {
     return room
 }
 
-async function updateRoomAvailability(roomId) { //userId
+async function updateRoomAvailability(roomId,) { //userId
     const room = await RoomsColl.findByIdAndUpdate(roomId, {
         available: false
     });

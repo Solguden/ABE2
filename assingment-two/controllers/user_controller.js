@@ -4,9 +4,131 @@ const express = require('express');
 const router = express.Router();
 const authorize = require('../helpers/authorize')
 
+/**
+ * @swagger
+ * /users:
+ *   post:
+ *     summary: Register user
+ *     description: Register user
+ *     requestBody:
+ *       description: request body
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               password:
+ *                 type: string
+*               role:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: User registered .
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                   description: The users name.
+ *                   example: Jacob
+ *                 role:
+ *                   type: string
+ *                   description: The users role.
+ *                   example: User
+ *                 hashedPassword:
+ *                   type: string
+ *                   description: The users hashed password.
+ *                   example: XxsecretxX
+ */
 router.post('/',registerUser) 
+
+/**
+ * @swagger
+ * /users/login:
+ *   post:
+ *     summary: Login user
+ *     description: Login user
+ *     requestBody:
+ *       description: request body
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Login.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                   description: The users name.
+ *                   example: Jacob
+ *                 role:
+ *                   type: string
+ *                   description: The users role.
+ *                   example: User
+ *                 token:
+ *                   type: string
+ *                   description: The users token.
+ *                   example: XxsecretxX
+ */
 router.post('/login', login)
-router.get('/',authorize(Role.Admin), getUsers)
+
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     security:
+ *      - bearerAuth: []
+ *     summary: Retrieve the list of users
+ *     description: Retrieve a list of users.
+ *     responses:
+ *       200:
+ *         description: A list of users.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       role:
+ *                         type: string
+ *                         description: The users role.
+ *                         example: User
+ *                       name:
+ *                         type: string
+ *                         description: The users name.
+ *                         example: Jacob
+ *                       hashedPassword:
+ *                         type: string
+ *                         description: The users hashed password.
+ *                         example: 123x456xx
+ *                       reservations:
+ *                         type: array
+ *                         description: The users reservations.
+ *                         example: []
+ */
+router.get('/', authorize(Role.Admin), getUsers) //authorize(Role.Admin),
+
+
 router.get('/:currentUserId/:userId',authorize(Role.Admin), getUserById)
 router.post('/upgrade/:currentUserId/:userId', authorize(Role.Admin), upgradeUser)
 
@@ -57,5 +179,6 @@ async function upgradeUser (req, res, next){
         .catch(err => next(err))
 }
 
-
-
+async function addReservation(id, roomNumber, hotelName){
+    userService
+}

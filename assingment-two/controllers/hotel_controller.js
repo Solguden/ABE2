@@ -1,12 +1,160 @@
 const hotelService = require('../services/hotel_service');
-const userService = require('../services/user_service');
+// const userService = require('../services/user_service');
 const Role = require('../helpers/role');
 const express = require('express');
 const router = express.Router();
 const authorize = require('../helpers/authorize')
 
+
+/**
+ * @swagger
+ * /hotels/{hotelId}:
+ *   get:
+ *     security:
+ *      - bearerAuth: []
+ *     summary: Retrieve the list of hotels
+ *     description: Retrieve a list of hotels.
+ *     parameters:
+ *      - in: path
+ *        name: hotelId
+ *        type: string
+ *        required: true
+ *        description: ID of hotel to get.
+ *     responses:
+ *       200:
+ *         description: A list of hotels.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                   description: The users name.
+ *                   example: Jacob
+ *                 country:
+ *                   type: string
+ *                   description: The users hashed password.
+ *                   example: Denmark
+ *                 managerId:
+ *                   type: string
+ *                   description: The users role.
+ *                   example: 123X456x
+ *                 rooms:
+ *                   type: array
+ *                   description: The users reservations.
+ *                   example: []
+ */
 router.get('/:hotelId', authorize(), getHotelById);
+
+/**
+ * @swagger
+ * /hotels/{currentUserId}/addHotel:
+ *   post:
+ *     security:
+ *      - bearerAuth: []
+ *     summary: Add Hotel
+ *     description: Add Hotel.
+ *     parameters:
+ *      - in: path
+ *        name: currentUserId
+ *        type: string
+ *        required: true
+ *        description: ID of current user
+ *     requestBody:
+ *       description: request body
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               country:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Hotel Added.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                   description: The users name.
+ *                   example: Hotel name
+ *                 country:
+ *                   type: string
+ *                   description: The users hashed password.
+ *                   example: Denmark
+ *                 managerId:
+ *                   type: string
+ *                   description: The users role.
+ *                   example: 123X456x
+ *                 rooms:
+ *                   type: array
+ *                   description: The users reservations.
+ *                   example: []
+ */
 router.post('/:currentUserId/addHotel',authorize(Role.Manager), createHotel)
+
+
+/**
+ * @swagger
+ * /hotels/{currentUserId}/{hotelId}/addRoom:
+ *   post:
+ *     security:
+ *      - bearerAuth: []
+ *     summary: Add Room
+ *     description: Add Room.
+ *     parameters:
+ *      - in: path
+ *        name: currentUserId
+ *        type: string
+ *        required: true
+ *        description: ID of current user
+ *      - in: path
+ *        name: hotelId
+ *        type: string
+ *        required: true
+ *        description: ID of hotel to add room.
+ *     requestBody:
+ *       description: request body
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               number:
+ *                 type: number
+ *     responses:
+ *       201:
+ *         description: Room Added.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 available:
+ *                   type: bool
+ *                   description: roomavailablity.
+ *                   example: true
+ *                 number:
+ *                   type: number
+ *                   description: RoomNumber.
+ *                   example: 1
+ *                 hotelName:
+ *                   type: string
+ *                   description: Name of hotel.
+ *                   example: Hotel motel
+ *                 hotelId:
+ *                   type: string
+ *                   description: Hotel identifier.
+ *                   example: 12345678
+ */
 router.post('/:currentUserId/:hotelId/addRoom', authorize(Role.Manager), createRoom)
 // router.get('/:hotelId/rooms', getAvailableRoomsByHotelId)
 
@@ -37,7 +185,3 @@ async function createRoom(req, res, next) {
             // hotelService.updateHotelRooms(hotel.id, room)
         })
 }
-
-// async function getAvailableRoomsByHotelId(req, res, next) {
-//     // hotelService.get
-// }

@@ -10,7 +10,8 @@ module.exports = {
     getUsers,
     getById,
     upgradeToManager,
-    login
+    login,
+    addReservation
 };
 
 async function login(name,password) {
@@ -78,3 +79,13 @@ async function upgradeToManager(id){
         role: Role.Manager
     })
 };
+
+async function addReservation(id,rooms){
+    const roomUpdate = await UsersColl.findByIdAndUpdate(id,{role:"Guest",reservations:rooms})
+    if (!roomUpdate) {
+        return;
+    }
+    else{
+        return roomUpdate;
+    }
+}
